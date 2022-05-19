@@ -1,15 +1,22 @@
 package com.jpmc.theater;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
+
+
 public class Theater {
 
     LocalDateProvider provider;
-    private List<Showing> schedule;
+    List<Showing> schedule;
 
     public Theater(LocalDateProvider provider) {
         this.provider = provider;
@@ -27,6 +34,7 @@ public class Theater {
             new Showing(turningRed, 7, LocalDateTime.of(provider.currentDate(), LocalTime.of(19, 30))),
             new Showing(spiderMan, 8, LocalDateTime.of(provider.currentDate(), LocalTime.of(21, 10))),
             new Showing(theBatMan, 9, LocalDateTime.of(provider.currentDate(), LocalTime.of(23, 0)))
+            
         );
     }
 
@@ -45,9 +53,16 @@ public class Theater {
         System.out.println(provider.currentDate());
         System.out.println("===================================================");
         schedule.forEach(s ->
-                System.out.println(s.getSequenceOfTheDay() + ": " + s.getStartTime() + " " + s.getMovie().getTitle() + " " + humanReadableFormat(s.getMovie().getRunningTime()) + " $" + s.getMovieFee())
-        );
-        System.out.println("===================================================");
+                System.out.println(s.getSequenceOfTheDay() + ": " + s.getStartTime() + " " + s.getMovie().getTitle() + " " + humanReadableFormat(s.getMovie().getRunningTime()) + " $" + s.getMovieFee() +" Movie Price after discount: $" + s.getMovieFeeAfterDiscount()));
+        System.out.println("==================================================");
+    }
+    
+    public void printInJSON() {
+    	
+    	System.out.println(provider.currentDate() + " in json format");
+  
+    	
+    	
     }
 
     public String humanReadableFormat(Duration duration) {
@@ -67,8 +82,11 @@ public class Theater {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args){
         Theater theater = new Theater(LocalDateProvider.singleton());
+        Customer customer = new Customer("SaiKumar", "101");
+        Reservation reserve = new Reservation(customer, theater.schedule.get(0), 10 );
         theater.printSchedule();
+        theater.printInJSON();
     }
 }
